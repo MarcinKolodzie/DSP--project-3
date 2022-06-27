@@ -12,7 +12,7 @@ let tasks = [
     {
         name: 'Wynieś śmieci',
         isCompleted: true,
-    },
+    }
 ]
 
 const appendArray = function (array, container) {
@@ -21,21 +21,55 @@ const appendArray = function (array, container) {
     })
 }
 
+
+const renderTask = function (task) {
+    const container = document.createElement('div')
+    container.className = 'toodo-list__list-item'
+
+    container.innerText = task.name
+
+    return container
+}
+
+const renderTasksList = function (tasks) {
+    const container = document.createElement('div')
+    container.className = 'toodo-list__list'
+
+    const tasksElements = tasks.map((task) => {
+        return renderTask(task)
+    })
+
+    appendArray(tasksElements, container)
+
+    return container
+}
+
 const render = function () {
-    return document.createTextNode('habcibi')
+    const container = document.createElement('div')
+    container.className = 'toodo-list'
+
+    const taskListElement = renderTasksList(tasks)
+
+    container.appendChild(taskListElement)
+
+    return container
 }
 
 const init = function (selector) {
+
     const container = document.querySelector(selector)
 
-    if (!container) return
-    console.log('Container do not exist')
+    if (!container) {
+        console.log('Container do not exist!')
+        return
+    }
 
     mainContainer = container
 
     const app = render()
 
     mainContainer.appendChild(app)
+
 }
 
 init('.root')
