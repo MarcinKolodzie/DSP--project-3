@@ -52,12 +52,43 @@ const renderTasksList = function (tasks) {
     return container
 }
 
+const renderNewTaskInput = function () {
+    const input = document.createElement('input')
+    input.className = 'toodo-list__input'
+
+    return input
+}
+
+const renderNewTaskButton = function (label) {
+    const button = document.createElement('button')
+    button.className = 'toodo-list__button'
+
+    button.innerText = label
+
+    return button
+}
+
+const renderNewTastForm = function () {
+    const container = document.createElement('form')
+    container.className = 'toodo-list__form'
+
+    const inputElement = renderNewTaskInput()
+    const buttonElement = renderNewTaskButton('ADD')
+
+    container.appendChild(inputElement)
+    container.appendChild(buttonElement)
+
+    return container
+}
+
 const render = function () {
     const container = document.createElement('div')
     container.className = 'toodo-list'
 
+    const newTastForm = renderNewTastForm()
     const taskListElement = renderTasksList(tasks)
 
+    container.appendChild(newTastForm)
     container.appendChild(taskListElement)
 
     return container
