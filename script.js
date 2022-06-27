@@ -5,7 +5,7 @@ let sort = 'ASCENDING' // ASCENDING or DESCENDING
 
 let searchPhrase = ''
 let searchInputIsFocused = false
-let newToDoName = ''
+let newToDoName = 'hdhdh'
 let newToDoInputIsFocused = false
 
 let tasks = [
@@ -19,12 +19,48 @@ let tasks = [
     }
 ]
 
+// ----------
+
+const focus = function (condition, element) {
+    if (condition) {
+
+        setTimeout(
+            function () {
+                element.focus()
+            },
+            0
+        )
+    }
+}
+
 const appendArray = function (array, container) {
     array.forEach(function (element) {
         container.appendChild(element)
     })
 }
 
+const renderInput = function (onChange, focusCondition, className) {
+    const input = document.createElement('input')
+    input.className = className
+
+    input.value = newToDoName
+
+    input.addEventListener('input', onChange)
+
+    focus(focusCondition, input)
+
+    return input
+}
+
+// ----------
+
+const onNewToDoNamechange = function (event) {
+    newToDoInputIsFocused = true
+    newToDoName = event.target.value
+    update()
+}
+
+// -------------
 
 const renderTask = function (task) {
     const container = document.createElement('li')
@@ -52,13 +88,6 @@ const renderTasksList = function (tasks) {
     return container
 }
 
-const renderNewTaskInput = function () {
-    const input = document.createElement('input')
-    input.className = 'toodo-list__input'
-
-    return input
-}
-
 const renderNewTaskButton = function (label) {
     const button = document.createElement('button')
     button.className = 'toodo-list__button'
@@ -66,6 +95,14 @@ const renderNewTaskButton = function (label) {
     button.innerText = label
 
     return button
+}
+
+const renderNewTaskInput = function () {
+    return renderInput(
+        onNewToDoNamechange,
+        newToDoInputIsFocused,
+        'toodo-list__input'
+    )
 }
 
 const renderNewTastForm = function () {
@@ -88,10 +125,21 @@ const render = function () {
     const newTastForm = renderNewTastForm()
     const taskListElement = renderTasksList(tasks)
 
+    const text = document.createTextNode(newToDoName)
+
+    container.appendChild(text)
     container.appendChild(newTastForm)
     container.appendChild(taskListElement)
 
     return container
+}
+
+const update = function () {
+    mainContainer.innerHTML = ''
+
+    const app = render()
+
+    mainContainer.appendChild(app)
 }
 
 const init = function (selector) {
