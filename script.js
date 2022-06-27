@@ -12,6 +12,10 @@ let tasks = [
     {
         name: 'Wynieś śmieci',
         isCompleted: true,
+    },
+    {
+        name: 'Zmuj naczunia',
+        isCompleted: false,
     }
 ]
 
@@ -25,6 +29,10 @@ const appendArray = function (array, container) {
 const renderTask = function (task) {
     const container = document.createElement('div')
     container.className = 'toodo-list__list-item'
+
+    if (task.isCompleted) {
+        container.className = container.className + ' toodo-list__list-item--complited'
+    }
 
     container.innerText = task.name
 

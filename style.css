@@ -31,3 +31,7 @@
     font-family: sans-serif;
     font-size: 14px;
 }
+
+.toodo-list__list-item--complited {
+    text-decoration: line-through;
+}
