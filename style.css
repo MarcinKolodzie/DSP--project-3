@@ -1,0 +1,33 @@
+.toodo-list__form {
+    display: flex;
+}
+
+.toodo-list__input {
+    border-radius: 4px;
+    height: 20px;
+    width: 100%;
+    outline: none;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    box-sizing: content-box;
+}
+
+.toodo-list__button {
+    border-radius: 4px;
+    height: 20px;
+    width: 100px;
+    box-sizing: content-box;
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+}
+
+.toodo-list__button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+
+.toodo-list__list-item {
+    font-family: sans-serif;
+    font-size: 14px;
+}
