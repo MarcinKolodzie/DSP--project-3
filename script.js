@@ -56,6 +56,16 @@ const renderInput = function (onChange, focusCondition, className) {
 
 // ---------- State changing functions
 
+const filterByComplited = function(task){
+    if(filter === 'ALL') return true
+
+    if(filter === 'DONE') return task.isCompleted
+
+    if(filter === 'NOT-DONE') return !task.isCompleted
+
+    return true
+}
+
 const onNewToDoNamechange = function (event) {
     newToDoInputIsFocused = true
     newToDoName = event.target.value
@@ -93,22 +103,57 @@ const onTaskComplitedToggle = function (indexToToggle) {
 
 }
 
+const onTaskDelete = function (indexToDelete) {
+
+    tasks = tasks.filter(function (task, index) {
+        return index !== indexToDelete
+    })
+
+    update()
+
+}
+
+const renderButton = function (label, onClick, className) {
+    const button = document.createElement('button')
+    button.className = className
+
+    if (onClick) {
+        button.addEventListener('click', onClick)
+    }
+
+    button.innerText = label
+
+    return button
+}
+
 // ------------- Rendering functions
 
-const renderTask = function (task, onClick) {
+const renderTask = function (task, onTaskToggle, onDelete) {
     const container = document.createElement('li')
+    const wrapper = document.createElement('div')
+    const textContainer = document.createElement('span')
+
     container.className = 'toodo-list__list-item'
-
-    container.addEventListener(
-        'click',
-        onClick
-    )
-
+    wrapper.className = 'toodo-list__list-item--wrapper'
+    textContainer.className = 'toodo-list__list-item--textContainer'
     if (task.isCompleted) {
         container.className = container.className + ' toodo-list__list-item--complited'
     }
 
-    container.innerText = task.name
+    const deleteButton = renderButton(
+        'X',
+        onDelete,
+        'toodo-list__button toodo-list__button--delete')
+
+    container.addEventListener('click', onTaskToggle)
+
+    const text = document.createTextNode(task.name)
+
+    textContainer.appendChild(text)
+    wrapper.appendChild(textContainer)
+    wrapper.appendChild(deleteButton)
+
+    container.appendChild(wrapper)
 
     return container
 }
@@ -118,7 +163,10 @@ const renderTasksList = function (tasks) {
     container.className = 'toodo-list__list'
 
     const tasksElements = tasks.map(function (task, index) {
-        return renderTask(task, function(){onTaskComplitedToggle(index)})
+        return renderTask(
+            task,
+            function () { onTaskComplitedToggle(index) },
+            function () { onTaskDelete(index) })
     })
 
     appendArray(tasksElements, container)
@@ -127,12 +175,7 @@ const renderTasksList = function (tasks) {
 }
 
 const renderNewTaskButton = function (label) {
-    const button = document.createElement('button')
-    button.className = 'toodo-list__button'
-
-    button.innerText = label
-
-    return button
+    return renderButton(label, null, 'toodo-list__button')
 }
 
 const renderNewTaskInput = function () {
@@ -162,8 +205,11 @@ const render = function () {
     const container = document.createElement('div')
     container.className = 'toodo-list'
 
+    const filterTasks = tasks
+    .filter(filterByComplited)
+
     const newTastForm = renderNewTastForm()
-    const taskListElement = renderTasksList(tasks)
+    const taskListElement = renderTasksList(filterTasks)
 
     container.appendChild(newTastForm)
     container.appendChild(taskListElement)

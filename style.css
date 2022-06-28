@@ -22,10 +22,19 @@
     transition: 0.5s ease-in-out;
 }
 
+.toodo-list__button--delete {
+    width: 20px;
+    color: white;
+    background-color: #c0392b;
+}
+
 .toodo-list__button:hover {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
+.toodo-list__button--delete:hover {
+    background-color: #e74c3c;
+}
 
 .toodo-list__list-item {
     cursor: pointer;
@@ -33,6 +42,12 @@
     font-size: 14px;
 }
 
-.toodo-list__list-item--complited {
+.toodo-list__list-item--wrapper {
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.toodo-list__list-item--complited .toodo-list__list-item--textContainer {
     text-decoration: line-through;
 }
