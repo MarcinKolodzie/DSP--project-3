@@ -1,3 +1,5 @@
+// --------- Aplication state
+
 let mainContainer = null
 
 let filter = 'ALL' // one of ALL, DONE, NOT-DONE
@@ -5,7 +7,7 @@ let sort = 'ASCENDING' // ASCENDING or DESCENDING
 
 let searchPhrase = ''
 let searchInputIsFocused = false
-let newToDoName = 'hdhdh'
+let newToDoName = ''
 let newToDoInputIsFocused = false
 
 let tasks = [
@@ -14,12 +16,12 @@ let tasks = [
         isCompleted: true,
     },
     {
-        name: 'Zmuj naczunia',
+        name: 'Zmyj naczunia',
         isCompleted: false,
     }
 ]
 
-// ----------
+// ---------- Generic / helper functions
 
 const focus = function (condition, element) {
     if (condition) {
@@ -52,7 +54,7 @@ const renderInput = function (onChange, focusCondition, className) {
     return input
 }
 
-// ----------
+// ---------- State changing functions
 
 const onNewToDoNamechange = function (event) {
     newToDoInputIsFocused = true
@@ -60,27 +62,47 @@ const onNewToDoNamechange = function (event) {
     update()
 }
 
-const onNewToDoSubmit = function(event){
-event.preventDefault()
+const onNewToDoSubmit = function (event) {
+    event.preventDefault()
 
-newToDoName
+    newToDoName
 
-tasks = tasks.concat({
-    name: newToDoName,
-    isCompleted: false
-})
+    tasks = tasks.concat({
+        name: newToDoName,
+        isCompleted: false
+    })
 
-newToDoName = ''
+    newToDoName = ''
 
-update()
+    update()
 
 }
 
-// -------------
+const onTaskComplitedToggle = function (indexToToggle) {
 
-const renderTask = function (task) {
+    tasks = tasks.map(function (task, index) {
+        if (index !== indexToToggle) return task
+
+        return {
+            name: task.name,
+            isCompleted: !task.isCompleted,
+        }
+    })
+
+    update()
+
+}
+
+// ------------- Rendering functions
+
+const renderTask = function (task, onClick) {
     const container = document.createElement('li')
     container.className = 'toodo-list__list-item'
+
+    container.addEventListener(
+        'click',
+        onClick
+    )
 
     if (task.isCompleted) {
         container.className = container.className + ' toodo-list__list-item--complited'
@@ -95,8 +117,8 @@ const renderTasksList = function (tasks) {
     const container = document.createElement('ol')
     container.className = 'toodo-list__list'
 
-    const tasksElements = tasks.map((task) => {
-        return renderTask(task)
+    const tasksElements = tasks.map(function (task, index) {
+        return renderTask(task, function(){onTaskComplitedToggle(index)})
     })
 
     appendArray(tasksElements, container)
