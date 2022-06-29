@@ -56,14 +56,20 @@ const renderInput = function (onChange, focusCondition, className) {
 
 // ---------- State changing functions
 
-const filterByComplited = function(task){
-    if(filter === 'ALL') return true
+const filterByComplited = function (task) {
+    if (filter === 'ALL') return true
 
-    if(filter === 'DONE') return task.isCompleted
+    if (filter === 'DONE') return task.isCompleted
 
-    if(filter === 'NOT-DONE') return !task.isCompleted
+    if (filter === 'NOT-DONE') return !task.isCompleted
 
     return true
+}
+
+const onFilterChange = function (filterValue) {
+    filter = filterValue
+
+    update()
 }
 
 const onNewToDoNamechange = function (event) {
@@ -201,16 +207,46 @@ const renderNewTastForm = function () {
     return container
 }
 
+const renderFilterButton = function (filterValue, activeFilter) {
+    let className = 'toodo-list__button toodo-list__button--filter'
+    if (filterValue === activeFilter) {
+        className = className + ' toodo-list__button--filter toodo-list__button--filter-active'
+    }
+
+    return renderButton(
+        filterValue,
+        function () { onFilterChange(filterValue) },
+        className)
+
+}
+
+const renderFilters = function (activeFilter) {
+    const container = document.createElement('div')
+    container.className = 'toodo-list__filters'
+
+    const buttonAll = renderFilterButton('ALL', activeFilter)
+    const buttonDone = renderFilterButton('DONE', activeFilter)
+    const buttonNotDone = renderFilterButton('NOT-DONE', activeFilter)
+
+    container.appendChild(buttonAll)
+    container.appendChild(buttonDone)
+    container.appendChild(buttonNotDone)
+
+    return container
+}
+
 const render = function () {
     const container = document.createElement('div')
     container.className = 'toodo-list'
 
     const filterTasks = tasks
-    .filter(filterByComplited)
+        .filter(filterByComplited)
 
+    const filtersElement = renderFilters(filter)
     const newTastForm = renderNewTastForm()
     const taskListElement = renderTasksList(filterTasks)
 
+    container.appendChild(filtersElement)
     container.appendChild(newTastForm)
     container.appendChild(taskListElement)
 
