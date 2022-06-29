@@ -5,7 +5,7 @@ let mainContainer = null
 let filter = 'ALL' // one of ALL, DONE, NOT-DONE
 let sort = 'ASCENDING' // ASCENDING or DESCENDING
 
-let searchPhrase = ''
+let searchPhrase = 'zmyj'
 let searchInputIsFocused = false
 let newToDoName = ''
 let newToDoInputIsFocused = false
@@ -64,6 +64,15 @@ const filterByComplited = function (task) {
     if (filter === 'NOT-DONE') return !task.isCompleted
 
     return true
+}
+
+const filterBySearchPhrase = function (task) {
+    const name = task.name.toLowerCase()
+    const search = searchPhrase.toLowerCase()
+
+    if (name.includes(search)) return true
+
+    return false
 }
 
 const onFilterChange = function (filterValue) {
@@ -241,6 +250,7 @@ const render = function () {
 
     const filterTasks = tasks
         .filter(filterByComplited)
+        .filter(filterBySearchPhrase)
 
     const filtersElement = renderFilters(filter)
     const newTastForm = renderNewTastForm()
