@@ -18,9 +18,18 @@
 
 <body>
 
-    <div class="root"></div>
+    <div class="root-1"></div>
+    <div class="root-2"></div>
 
     <script src="./script.js"></script>
+
+    <script>
+        const initToDo1 = createToDoInit()
+        const initToDo2 = createToDoInit()
+        
+        initToDo1('.root-1')
+        initToDo2('.root-2')
+    </script>
 
 </body>
 

@@ -1,4 +1,4 @@
-const initToDo = (function () {
+const createToDoInit = function () {
 
     // --------- Aplication state
 
@@ -404,6 +404,4 @@ const initToDo = (function () {
 
     return init
 
-})()
-
-initToDo('.root')
+}
