@@ -25,6 +25,35 @@ let tasks = [
     }
 ]
 
+const loadFromLocalStorage = function () {
+    const state = JSON.parse(localStorage.getItem('todo'))
+
+    if (!state) return
+
+    filter = state.filter
+    sort = state.sort
+    searchPhrase = state.searchPhrase
+    searchInputIsFocused = state.searchInputIsFocused
+    newToDoName = state.newToDoName
+    newToDoInputIsFocused = state.newToDoInputIsFocused
+    tasks = state.tasks
+}
+
+const saveToLocalStorage = function () {
+    const state = {
+        mainContainer: mainContainer,
+        filter: filter,
+        sort: sort,
+        searchPhrase: searchPhrase,
+        searchInputIsFocused: searchInputIsFocused,
+        newToDoName: newToDoName,
+        newToDoInputIsFocused: newToDoInputIsFocused,
+        tasks: tasks,
+    }
+
+    localStorage.setItem('todo', JSON.stringify(state))
+}
+
 // ---------- Generic / helper functions
 
 const sortDescending = function (taskA, taskB) {
@@ -356,6 +385,8 @@ const update = function () {
 
     const app = render()
 
+    saveToLocalStorage()
+
     mainContainer.appendChild(app)
 }
 
@@ -367,6 +398,8 @@ const init = function (selector) {
         console.log('Container do not exist!')
         return
     }
+
+    loadFromLocalStorage()
 
     mainContainer = container
 
