@@ -41,11 +41,11 @@ const appendArray = function (array, container) {
     })
 }
 
-const renderInput = function (onChange, focusCondition, className) {
+const renderInput = function (onChange, value, focusCondition, className) {
     const input = document.createElement('input')
     input.className = className
 
-    input.value = newToDoName
+    input.value = value
 
     input.addEventListener('input', onChange)
 
@@ -55,6 +55,13 @@ const renderInput = function (onChange, focusCondition, className) {
 }
 
 // ---------- State changing functions
+
+const onSearchPhraseChange = function (event) {
+    searchInputIsFocused = true
+    newToDoInputIsFocused = false
+    searchPhrase = event.target.value
+    update()
+}
 
 const filterByComplited = function (task) {
     if (filter === 'ALL') return true
@@ -81,8 +88,9 @@ const onFilterChange = function (filterValue) {
     update()
 }
 
-const onNewToDoNamechange = function (event) {
+const onNewToDoNameChange = function (event) {
     newToDoInputIsFocused = true
+    searchInputIsFocused = false
     newToDoName = event.target.value
     update()
 }
@@ -195,7 +203,8 @@ const renderNewTaskButton = function (label) {
 
 const renderNewTaskInput = function () {
     return renderInput(
-        onNewToDoNamechange,
+        onNewToDoNameChange,
+        newToDoName,
         newToDoInputIsFocused,
         'toodo-list__input'
     )
@@ -244,6 +253,21 @@ const renderFilters = function (activeFilter) {
     return container
 }
 
+const renderSearch = function () {
+    const container = document.createElement('div')
+    container.className = 'toodo-list__search'
+
+    const input = renderInput(
+        onSearchPhraseChange,
+        searchPhrase,
+         searchInputIsFocused, 
+         'toodo-list__input')
+
+container.appendChild(input)
+
+    return container
+}
+
 const render = function () {
     const container = document.createElement('div')
     container.className = 'toodo-list'
@@ -252,10 +276,12 @@ const render = function () {
         .filter(filterByComplited)
         .filter(filterBySearchPhrase)
 
+    const searchElement = renderSearch()
     const filtersElement = renderFilters(filter)
     const newTastForm = renderNewTastForm()
     const taskListElement = renderTasksList(filterTasks)
 
+    container.appendChild(searchElement)
     container.appendChild(filtersElement)
     container.appendChild(newTastForm)
     container.appendChild(taskListElement)

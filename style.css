@@ -1,3 +1,7 @@
+.toodo-list__search{
+    margin-bottom: 16px;
+}
+
 .toodo-list__filters {
     display: flex;
     justify-content: space-between;
