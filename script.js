@@ -3,7 +3,7 @@
 let mainContainer = null
 
 let filter = 'ALL' // one of ALL, DONE, NOT-DONE
-let sort = 'ASCENDING' // NONE, ASCENDING or DESCENDING
+let sort = 'NONE' // NONE, ASCENDING or DESCENDING
 
 let searchPhrase = ''
 let searchInputIsFocused = false
@@ -98,6 +98,12 @@ const filterBySearchPhrase = function (task) {
 
 const onFilterChange = function (filterValue) {
     filter = filterValue
+
+    update()
+}
+
+const onSortChange = function (sortValue) {
+    sort = sortValue
 
     update()
 }
@@ -267,6 +273,34 @@ const renderFilters = function (activeFilter) {
     return container
 }
 
+const renderSortButton = function (sortValue, activeSort) {
+    let className = 'toodo-list__button toodo-list__button--sort'
+    if (sortValue === activeSort) {
+        className = className + ' toodo-list__button--sort toodo-list__button--sort-active'
+    }
+
+    return renderButton(
+        sortValue,
+        function () { onSortChange(sortValue) },
+        className)
+
+}
+
+const renderSortButtons = function (activeSort) {
+    const container = document.createElement('div')
+    container.className = 'toodo-list__sort'
+
+    const buttonNone = renderSortButton('NONE', activeSort)
+    const buttonAscending = renderSortButton('ASCENDING', activeSort)
+    const buttonDescending = renderSortButton('DESCENDING', activeSort)
+
+    container.appendChild(buttonNone)
+    container.appendChild(buttonAscending)
+    container.appendChild(buttonDescending)
+
+    return container
+}
+
 const renderSearch = function () {
     const container = document.createElement('div')
     container.className = 'toodo-list__search'
@@ -304,11 +338,13 @@ const render = function () {
 
     const searchElement = renderSearch()
     const filtersElement = renderFilters(filter)
+    const sortButtonsElement = renderSortButtons(sort)
     const newTastForm = renderNewTastForm()
     const taskListElement = renderTasksList(sortedTasks)
 
     container.appendChild(searchElement)
     container.appendChild(filtersElement)
+    container.appendChild(sortButtonsElement)
     container.appendChild(newTastForm)
     container.appendChild(taskListElement)
 
