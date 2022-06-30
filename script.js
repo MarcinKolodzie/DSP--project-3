@@ -3,6 +3,7 @@ const createToDoInit = function () {
     // --------- Aplication state
 
     let mainContainer = null
+    let localStorageKey = ''
 
     let filter = 'ALL' // one of ALL, DONE, NOT-DONE
     let sort = 'NONE' // NONE, ASCENDING or DESCENDING
@@ -15,7 +16,7 @@ const createToDoInit = function () {
     let tasks = []
 
     const loadFromLocalStorage = function () {
-        const state = JSON.parse(localStorage.getItem('todo'))
+        const state = JSON.parse(localStorage.getItem(localStorageKey))
 
         if (!state) return
 
@@ -28,9 +29,8 @@ const createToDoInit = function () {
         tasks = state.tasks
     }
 
-    const saveToLocalStorage = function () {
+    const saveToLocaleStorage = function () {
         const state = {
-            mainContainer: mainContainer,
             filter: filter,
             sort: sort,
             searchPhrase: searchPhrase,
@@ -40,7 +40,7 @@ const createToDoInit = function () {
             tasks: tasks,
         }
 
-        localStorage.setItem('todo', JSON.stringify(state))
+        localStorage.setItem(localStorageKey, JSON.stringify(state))
     }
 
     // ---------- Generic / helper functions
@@ -86,7 +86,20 @@ const createToDoInit = function () {
         return input
     }
 
-    const generateTimestampId = function(){
+    const renderButton = function (label, onClick, className) {
+        const button = document.createElement('button')
+        button.className = className
+
+        if (onClick) {
+            button.addEventListener('click', onClick)
+        }
+
+        button.innerText = label
+
+        return button
+    }
+
+    const generateTimestampId = function () {
         return Date.now() + '-' + Math.round(Math.random() * 1000000)
     }
 
@@ -99,7 +112,7 @@ const createToDoInit = function () {
         update()
     }
 
-    const filterByComplited = function (task) {
+    const filterByCompleted = function (task) {
         if (filter === 'ALL') return true
 
         if (filter === 'DONE') return task.isCompleted
@@ -152,15 +165,15 @@ const createToDoInit = function () {
 
     }
 
-    const onTaskComplitedToggle = function (idToToggle) {
+    const onTaskCompleteToggle = function (idToToggle) {
 
         tasks = tasks.map(function (task) {
-            if (tasks.id !== idToToggle) return task
+            if (task.id !== idToToggle) return task
 
             return {
+                id: task.id,
                 name: task.name,
                 isCompleted: !task.isCompleted,
-                id: task.id,
             }
         })
 
@@ -176,19 +189,6 @@ const createToDoInit = function () {
 
         update()
 
-    }
-
-    const renderButton = function (label, onClick, className) {
-        const button = document.createElement('button')
-        button.className = className
-
-        if (onClick) {
-            button.addEventListener('click', onClick)
-        }
-
-        button.innerText = label
-
-        return button
     }
 
     // ------------- Rendering functions
@@ -208,8 +208,8 @@ const createToDoInit = function () {
         const deleteButton = renderButton(
             'X',
             onDelete,
-            'toodo-list__button toodo-list__button--delete')
-
+            'toodo-list__button toodo-list__button--delete'
+            )
         container.addEventListener('click', onTaskToggle)
 
         const text = document.createTextNode(task.name)
@@ -230,8 +230,9 @@ const createToDoInit = function () {
         const tasksElements = tasks.map(function (task) {
             return renderTask(
                 task,
-                function () { onTaskComplitedToggle(task.id) },
-                function () { onTaskDelete(task.id) })
+                function () { onTaskCompleteToggle(task.id) },
+                function () { onTaskDelete(task.id) },
+                )
         })
 
         appendArray(tasksElements, container)
@@ -252,7 +253,7 @@ const createToDoInit = function () {
         )
     }
 
-    const renderNewTastForm = function () {
+    const renderNewTaskForm = function () {
         const container = document.createElement('form')
         container.className = 'toodo-list__form'
 
@@ -270,7 +271,7 @@ const createToDoInit = function () {
     const renderFilterButton = function (filterValue, activeFilter) {
         let className = 'toodo-list__button toodo-list__button--filter'
         if (filterValue === activeFilter) {
-            className = className + ' toodo-list__button--filter toodo-list__button--filter-active'
+            className = className + ' toodo-list__button--filter-active'
         }
 
         return renderButton(
@@ -298,7 +299,7 @@ const createToDoInit = function () {
     const renderSortButton = function (sortValue, activeSort) {
         let className = 'toodo-list__button toodo-list__button--sort'
         if (sortValue === activeSort) {
-            className = className + ' toodo-list__button--sort toodo-list__button--sort-active'
+            className = className + ' toodo-list__button--sort-active'
         }
 
         return renderButton(
@@ -331,7 +332,8 @@ const createToDoInit = function () {
             onSearchPhraseChange,
             searchPhrase,
             searchInputIsFocused,
-            'toodo-list__input')
+            'toodo-list__input'
+            )
 
         container.appendChild(input)
 
@@ -342,11 +344,11 @@ const createToDoInit = function () {
         const container = document.createElement('div')
         container.className = 'toodo-list'
 
-        const filterTasks = tasks
-            .filter(filterByComplited)
+        const filteredTasks = tasks
+            .filter(filterByCompleted)
             .filter(filterBySearchPhrase)
 
-        const sortedTasks = filterTasks
+        const sortedTasks = filteredTasks
             .slice()
             .sort(function (taskA, taskB) {
                 if (sort === 'NONE') {
@@ -361,13 +363,13 @@ const createToDoInit = function () {
         const searchElement = renderSearch()
         const filtersElement = renderFilters(filter)
         const sortButtonsElement = renderSortButtons(sort)
-        const newTastForm = renderNewTastForm()
+        const newTaskFormElement = renderNewTaskForm()
         const taskListElement = renderTasksList(sortedTasks)
 
         container.appendChild(searchElement)
         container.appendChild(filtersElement)
         container.appendChild(sortButtonsElement)
-        container.appendChild(newTastForm)
+        container.appendChild(newTaskFormElement)
         container.appendChild(taskListElement)
 
         return container
@@ -378,12 +380,12 @@ const createToDoInit = function () {
 
         const app = render()
 
-        saveToLocalStorage()
+        saveToLocaleStorage()
 
         mainContainer.appendChild(app)
     }
 
-    const init = function (selector) {
+    const init = function (selector, key) {
 
         const container = document.querySelector(selector)
 
@@ -392,9 +394,10 @@ const createToDoInit = function () {
             return
         }
 
-        loadFromLocalStorage()
-
         mainContainer = container
+        localStorageKey = key
+
+        loadFromLocalStorage()
 
         const app = render()
 
