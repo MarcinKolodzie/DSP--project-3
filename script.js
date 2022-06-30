@@ -12,20 +12,7 @@ const initToDo = (function () {
     let newToDoName = ''
     let newToDoInputIsFocused = false
 
-    let tasks = [
-        {
-            name: 'Wynieś śmieci',
-            isCompleted: true,
-        },
-        {
-            name: 'Ala ma kota',
-            isCompleted: true,
-        },
-        {
-            name: 'Zmyj naczunia',
-            isCompleted: false,
-        }
-    ]
+    let tasks = []
 
     const loadFromLocalStorage = function () {
         const state = JSON.parse(localStorage.getItem('todo'))
@@ -99,6 +86,10 @@ const initToDo = (function () {
         return input
     }
 
+    const generateTimestampId = function(){
+        return Date.now() + '-' + Math.round(Math.random() * 1000000)
+    }
+
     // ---------- State changing functions
 
     const onSearchPhraseChange = function (event) {
@@ -149,11 +140,10 @@ const initToDo = (function () {
     const onNewToDoSubmit = function (event) {
         event.preventDefault()
 
-        newToDoName
-
         tasks = tasks.concat({
             name: newToDoName,
-            isCompleted: false
+            isCompleted: false,
+            id: generateTimestampId(),
         })
 
         newToDoName = ''
@@ -162,14 +152,15 @@ const initToDo = (function () {
 
     }
 
-    const onTaskComplitedToggle = function (indexToToggle) {
+    const onTaskComplitedToggle = function (idToToggle) {
 
-        tasks = tasks.map(function (task, index) {
-            if (index !== indexToToggle) return task
+        tasks = tasks.map(function (task) {
+            if (tasks.id !== idToToggle) return task
 
             return {
                 name: task.name,
                 isCompleted: !task.isCompleted,
+                id: task.id,
             }
         })
 
@@ -177,10 +168,10 @@ const initToDo = (function () {
 
     }
 
-    const onTaskDelete = function (indexToDelete) {
+    const onTaskDelete = function (idToDelete) {
 
-        tasks = tasks.filter(function (task, index) {
-            return index !== indexToDelete
+        tasks = tasks.filter(function (task) {
+            return task.id !== idToDelete
         })
 
         update()
@@ -236,11 +227,11 @@ const initToDo = (function () {
         const container = document.createElement('ol')
         container.className = 'toodo-list__list'
 
-        const tasksElements = tasks.map(function (task, index) {
+        const tasksElements = tasks.map(function (task) {
             return renderTask(
                 task,
-                function () { onTaskComplitedToggle(index) },
-                function () { onTaskDelete(index) })
+                function () { onTaskComplitedToggle(task.id) },
+                function () { onTaskDelete(task.id) })
         })
 
         appendArray(tasksElements, container)
