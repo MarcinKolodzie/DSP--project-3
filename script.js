@@ -3,7 +3,7 @@
 let mainContainer = null
 
 let filter = 'ALL' // one of ALL, DONE, NOT-DONE
-let sort = 'ASCENDING' // ASCENDING or DESCENDING
+let sort = 'ASCENDING' // NONE, ASCENDING or DESCENDING
 
 let searchPhrase = ''
 let searchInputIsFocused = false
@@ -26,6 +26,16 @@ let tasks = [
 ]
 
 // ---------- Generic / helper functions
+
+const sortDescending = function (taskA, taskB) {
+    return -(taskA.name.localeCompare(taskB.name))
+}
+
+const sortAscending = function (taskA, taskB) {
+    return taskA.name.localeCompare(taskB.name)
+}
+
+const sortNone = function (taskA, taskB) { return 0 }
 
 const focus = function (condition, element) {
     if (condition) {
@@ -283,7 +293,13 @@ const render = function () {
     const sortedTasks = filterTasks
         .slice()
         .sort(function (taskA, taskB) {
-            return -(taskA.name.localeCompare(taskB.name))
+            if (sort === 'NONE') {
+                return sortNone(taskA, taskB)
+            }
+            if (sort === 'ASCENDING') {
+                return sortAscending(taskA, taskB)
+            }
+            return sortDescending(taskA, taskB)
         })
 
     const searchElement = renderSearch()
